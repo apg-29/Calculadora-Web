@@ -112,3 +112,45 @@ ls -l nativo/web/templates/index.html
 ```
 
 Los tres archivos existen correctamente y quedan preparados para ejecutar la aplicación mediante Gunicorn y publicarla posteriormente a través de nginx.
+
+## 3. Publicar los estáticos en el DocumentRoot
+
+El fichero CSS de la aplicación se sirve mediante nginx como contenido estático.
+
+Se creó el DocumentRoot de la aplicación dentro del contenedor:
+
+```bash
+docker exec dpl-lab mkdir -p /var/www/calculadora
+```
+
+Después se copió el fichero de estilos desde el microproyecto:
+
+```bash
+docker exec dpl-lab bash -c 'cp /home/aperez/dpl/ae2/nativo/web/estilos.css /var/www/calculadora/'
+```
+
+Se comprobó que el fichero se había copiado correctamente:
+
+```bash
+docker exec dpl-lab ls -la /var/www/calculadora/
+```
+El resultado obtenido fue:
+
+`estilos.css`
+
+Finalmente se establecieron permisos de lectura y acceso para que nginx pueda servir el fichero:
+
+```bash
+docker exec dpl-lab chmod -R a+rX /var/www/calculadora
+```
+Se comprobó que el fichero mantiene permisos de lectura:
+
+```bash
+-rw-r--r-- 1 root root 1146 Oct  4 17:44 /var/www/calculadora/estilos.css
+```
+
+El fichero queda publicado en `/var/www/calculadora/estilos.css`
+
+El código Python no se copia al DocumentRoot. La aplicación Flask se ejecutará posteriormente mediante Gunicorn desde el microproyecto.
+
+
