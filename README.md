@@ -74,6 +74,34 @@ gunicorn     23.0.0
 
 El entorno virtual `.venv/` no se versiona mediante Git porque contiene dependencias instaladas y puede regenerarse a partir de `requirements.txt`.
 
+### Arquitectura
+
+```mermaid
+flowchart LR
+    C[Cliente<br/>curl / navegador]
+
+    subgraph N["Entorno nativo"]
+        NGINX1[nginx<br/>:80]
+        GUNI1[Gunicorn<br/>127.0.0.1:8000]
+        FLASK1[Flask<br/>nativo/web/app.py]
+
+        NGINX1 -->|proxy_pass| GUNI1
+        GUNI1 --> FLASK1
+    end
+
+    subgraph D["Entorno dockerizado"]
+        NGINX2[nginx<br/>:8081]
+        GUNI2[Gunicorn<br/>app:8000]
+        FLASK2[Flask<br/>dockerizado/web/app.py]
+
+        NGINX2 -->|proxy_pass app:8000| GUNI2
+        GUNI2 --> FLASK2
+    end
+
+    C -->|localhost:80| NGINX1
+    C -->|localhost:8081| NGINX2
+```
+
 ## 2. Crear la calculadora Flask
 
 La aplicación web se implementa con Flask y realiza los cálculos en el servidor mediante Python. No se utiliza JavaScript para realizar las operaciones.
@@ -504,4 +532,166 @@ La copia queda almacenada en:
 
 ```text
 nativo/nginx-calculadora.conf  
+```
+
+## 8. Crear el entorno dockerizado con Docker Compose
+
+Se creó un entorno dockerizado equivalente al entorno nativo. La estructura creada es:
+
+```text  
+dockerizado/  
+├── compose.yml  
+├── nginx/  
+│   └── default.conf  
+└── web/  
+    ├── app.py  
+    ├── estilos.css  
+    ├── requirements.txt  
+    └── templates/  
+        └── index.html  
+```
+
+La aplicación del entorno nativo se copió al directorio `dockerizado/web`:
+
+```bash
+cp -r nativo/web dockerizado/
+```
+Después se modificó el título de la página para identificar el entorno dockerizado:
+
+```text
+<title>Calculadora en entorno dockerizado</title>  
+<h1>Calculadora en entorno dockerizado</h1>
+```
+
+Se eliminó el directorio `__pycache__`, ya que contiene ficheros generados automáticamente por Python y no forma parte del código de la aplicación:
+
+```bash
+rm -rf dockerizado/web/__pycache__  
+```
+
+### Configuración de Docker Compose
+
+El fichero `dockerizado/compose.yml` define los servicios `app` y `web`.
+
+El servicio `app` utiliza la imagen oficial `python:3.12-slim`. El código de la aplicación se monta como volumen de solo lectura en `/srv/app`. Al arrancar el contenedor se instalan las dependencias indicadas en `requirements.txt` y se inicia Gunicorn escuchando en todas las interfaces del contenedor en el puerto `8000`:
+
+```text
+services:  
+  app:  
+    image: python:3.12-slim  
+    working\_dir: /srv/app  
+    volumes:  
+      - ./web:/srv/app:ro  
+    command: >  
+      sh -c "pip install --no-cache-dir -r requirements.txt &&  
+             gunicorn --bind 0.0.0.0:8000 --workers 2 --access-logfile - --error-logfile - app:app"  
+```
+
+El servicio `web` utiliza nginx y monta la configuración del proxy inverso desde `dockerizado/nginx/default.conf`. También monta el directorio de la aplicación como contenido estático:
+
+```text
+  web:  
+    image: nginx:1.27  
+    volumes:  
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro  
+      - ./web:/usr/share/nginx/html:ro  
+    ports:  
+      - "8081:80"  
+    depends\_on:  
+      - app  
+```
+
+Inicialmente se configuró el puerto externo `8080`, pero este puerto ya estaba ocupado por el contenedor `dpl-lab`:
+
+```text
+Error response from daemon: failed to set up container networking:  
+Bind for 0.0.0.0:8080 failed: port is already allocated  
+```
+
+Se comprobó la ocupación del puerto mediante:
+
+```bash
+docker ps  
+```
+
+El contenedor `dpl-lab` ya tenía publicado el puerto `8080`, por lo que se modificó el `compose.yml` para utilizar el puerto `8081` del anfitrión:
+
+```text
+ports:  
+  - "8081:80"  
+```
+Después se detuvieron los servicios creados parcialmente:
+
+```bash
+docker compose down  
+```
+y se volvieron a iniciar:
+
+```bash
+docker compose up -d  
+```
+Los dos servicios quedaron funcionando correctamente:
+
+```bash
+docker compose ps  
+```
+Salida:
+
+```text
+NAME                IMAGE              COMMAND                  SERVICE   CREATED          STATUS          PORTS  
+dockerizado-app-1   python:3.12-slim   "sh -c 'pip install …"   app       ...              Up  
+dockerizado-web-1   nginx:1.27         "/docker-entrypoint.…"   web       ...              Up        0.0.0.0:8081->80/tcp  
+```
+### Comprobación de la aplicación
+
+Se comprobó que nginx responde correctamente mediante el puerto `8081`:
+
+```bash
+curl -I localhost:8081  
+```
+Resultado:
+
+```text
+HTTP/1.1 200 OK  
+Server: nginx/1.27.5  
+Date: Sun, 04 Oct 2026 21:14:33 GMT  
+Content-Type: text/html; charset=utf-8  
+Content-Length: 1080  
+Connection: keep-alive  
+```
+
+También se comprobó que se está sirviendo la versión dockerizada de la página y probamos una suma:
+
+```bash
+curl -s http://localhost:8081/ | grep -o "<h1>.\*</h1>"  
+curl -s -d "v1=7&v2=5&op=%2B" http://localhost:8081/ | grep -i "Resultado"  
+```
+
+Finalmente se revisaron los logs del servicio de aplicación:
+
+```bash
+docker compose logs --tail=10 app  
+```
+
+Los registros muestran que Gunicorn se inició correctamente, escuchando en `0.0.0.0:8000`, con dos workers:
+
+```text
+\[INFO\] Starting gunicorn 23.0.0  
+\[INFO\] Listening at: http://0.0.0.0:8000 (10)  
+\[INFO\] Using worker: sync  
+\[INFO\] Booting worker with pid: 11  
+\[INFO\] Booting worker with pid: 12  
+```
+También aparecen las peticiones realizadas a través de nginx:
+
+```text
+"HEAD / HTTP/1.0" 200  
+"GET / HTTP/1.0" 200  
+"POST / HTTP/1.0" 200  
+```
+
+Esto confirma que el flujo completo funciona correctamente. El entorno dockerizado queda accesible desde el anfitrión mediante:
+
+```text
+http://localhost:8081/
 ```
