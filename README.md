@@ -281,3 +281,92 @@ Los logs específicos de la aplicación se configuraron en:
 /var/log/nginx/calculadora.error.log
 ```
 
+## 6. Activar, validar y recargar nginx
+
+Una vez creado el `server block`, se desactivó el sitio por defecto de nginx para evitar conflictos con `default_server`:
+
+```bash
+docker exec dpl-lab rm -f /etc/nginx/sites-enabled/default
+```
+
+Se activó el sitio `calculadora` mediante un enlace simbólico desde `sites-available` a `sites-enabled`:
+
+```bash
+docker exec dpl-lab ln -sf /etc/nginx/sites-available/calculadora /etc/nginx/sites-enabled/calculadora
+```
+
+Se comprobó que el enlace simbólico se había creado correctamente:
+
+```bash
+docker exec dpl-lab ls -la /etc/nginx/sites-enabled
+```
+
+Resultado:
+
+```text
+calculadora -> /etc/nginx/sites-available/calculadora
+```
+
+Antes de arrancar nginx se validó la configuración:
+
+```bash
+docker exec dpl-lab nginx -t
+```
+
+Resultado:
+
+```text
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+
+Como nginx no estaba iniciado previamente en el contenedor, se arrancó mediante:
+
+```bash
+docker exec dpl-lab nginx
+```
+
+Después se comprobó que el proceso maestro y los workers estaban funcionando:
+
+```bash
+docker exec dpl-lab ps aux | grep nginx
+```
+
+```text
+root         785  0.0  0.0  11296  3672 ?        Ss   19:53   0:00 nginx: master process nginx
+www-data     803  0.0  0.0  11480  3316 ?        S    19:54   0:00 nginx: worker process
+www-data     804  0.0  0.0  11480  3316 ?        S    19:54   0:00 nginx: worker process
+www-data     805  0.0  0.0  11480  3316 ?        S    19:54   0:00 nginx: worker process
+www-data     806  0.0  0.0  11480  3316 ?        S    19:54   0:00 nginx: worker process
+www-data     807  0.0  0.0  11480  3316 ?        S    19:54   0:00 nginx: worker process
+```
+
+Se comprobó el acceso a la aplicación a través de nginx:
+
+```bash
+docker exec dpl-lab curl -I localhost
+```
+
+Resultado:
+
+```text
+HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Content-Type: text/html; charset=utf-8
+```
+
+Finalmente, se comprobó que nginx puede recargar correctamente su configuración:
+
+```bash
+docker exec dpl-lab nginx -s reload
+```
+
+Resultado:
+
+```text
+2026/10/04 19:54:22 [notice] 797#797: signal process started
+```
+
+Está activo el `server block` de `calculadora` y nginx recibe las peticiones en el puerto 80, sirviendo directamente los archivos estáticos y enviando las peticiones de la aplicación a Gunicorn mediante `proxy_pass`.
+
+
