@@ -153,4 +153,64 @@ El fichero queda publicado en `/var/www/calculadora/estilos.css`
 
 El código Python no se copia al DocumentRoot. La aplicación Flask se ejecutará posteriormente mediante Gunicorn desde el microproyecto.
 
+## 4. Iniciar Gunicorn en foreground 
+
+La aplicación Flask se ejecuta mediante Gunicorn. Como el contenedor `dpl-lab` no utiliza `systemd`, Gunicorn se inicia mediante `docker exec -d`.
+
+Se inició Gunicorn desde el directorio que contiene `app.py`:
+
+```bash
+docker exec -d dpl-lab bash -c 'cd /home/aperez/dpl/ae2/nativo/web && /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app > /var/log/calculadora-gunicorn.log 2>&1'
+```
+
+Se comprobaron los procesos de Gunicorn:
+
+```bash
+docker exec dpl-lab ps aux | grep gunicorn
+```
+
+Salida:
+
+```bash
+root         675  0.0  0.0   4336  3396 ?        Ss   18:49   0:00 bash -c cd /home/aperez/dpl/ae2/nativo/web && /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app > /var/log/calculadora-gunicorn.log 2>&1
+root         682  0.0  0.1  31288 24312 ?        S    18:49   0:00 /home/aperez/dpl/ae2/.venv/bin/python3 /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app
+root         683  0.0  0.1  39064 29732 ?        S    18:50   0:00 /home/aperez/dpl/ae2/.venv/bin/python3 /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app
+root         684  0.0  0.1  39136 29716 ?        S    18:50   0:00 /home/aperez/dpl/ae2/.venv/bin/python3 /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app
+```
+
+Se comprobó que Gunicorn responde directamente en el puerto 8000 mediante `curl`:
+
+```bash
+docker exec dpl-lab curl -I http://127.0.0.1:8000/
+```
+
+Salida:
+
+```bash
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0HTTP/1.1 200 OK
+Server: gunicorn
+Date: Sun, 04 Oct 2026 18:52:24 GMT
+Connection: close
+Content-Type: text/html; charset=utf-8
+Content-Length: 1070
+
+  0  1070    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+```
+
+Finalmente se revisaron los registros de Gunicorn:
+
+```bash
+docker exec dpl-lab tail -n 5 /var/log/calculadora-gunicorn.log
+
+[2026-10-04 18:50:00 +0000] [682] [INFO] Listening at: http://127.0.0.1:8000 (682)
+[2026-10-04 18:50:00 +0000] [682] [INFO] Using worker: sync
+[2026-10-04 18:50:00 +0000] [683] [INFO] Booting worker with pid: 683
+[2026-10-04 18:50:00 +0000] [684] [INFO] Booting worker with pid: 684
+127.0.0.1 - - [04/Oct/2026:18:52:24 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/8.5.0"
+```
+
+
+
 
