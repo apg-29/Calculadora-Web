@@ -211,6 +211,73 @@ docker exec dpl-lab tail -n 5 /var/log/calculadora-gunicorn.log
 127.0.0.1 - - [04/Oct/2026:18:52:24 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/8.5.0"
 ```
 
+## 5. Crear el server block de nginx
 
+Se creó el server block de nginx para la aplicación en:
 
+```bash
+/etc/nginx/sites-available/calculadora
+```
+
+El fichero se creó manualmente con privilegios de root dentro del contenedor:
+
+```bash
+docker exec -it dpl-lab bash
+nano /etc/nginx/sites-available/calculadora
+```
+
+La configuración creada es:
+
+```bash
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    root /var/www/calculadora;
+
+    location = /estilos.css {
+        try_files \$uri =404;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    access_log /var/log/nginx/calculadora.access.log;
+    error_log /var/log/nginx/calculadora.error.log;
+}
+```
+
+El `DocumentRoot` utilizado por nginx es `/var/www/calculadora`, donde se encuentra el fichero estático `estilos.css`.
+
+La ruta `/estilos.css` se sirve directamente mediante nginx:
+
+```bash
+location = /estilos.css {
+    try_files $uri =404;
+}
+```
+
+El resto de las peticiones se envían mediante `proxy_pass` al servidor Gunicorn que está escuchando en `127.0.0.1:8000`. Las cabeceras también fueron configuradas:
+
+```bash
+location / {  
+        proxy\_pass http://127.0.0.1:8000;  
+        proxy\_set\_header Host $host;  
+        proxy\_set\_header X-Real-IP $remote\_addr;  
+        proxy\_set\_header X-Forwarded-For $proxy\_add\_x\_forwarded\_for;  
+        proxy\_set\_header X-Forwarded-Proto $scheme;  
+    }
+```
+
+Los logs específicos de la aplicación se configuraron en:
+
+```bash
+/var/log/nginx/calculadora.access.log
+/var/log/nginx/calculadora.error.log
+```
 
