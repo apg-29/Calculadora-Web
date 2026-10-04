@@ -82,19 +82,23 @@ flowchart LR
 
     subgraph N["Entorno nativo"]
         NGINX1[nginx<br/>:80]
+        STATIC1[estilos.css<br/>estático]
         GUNI1[Gunicorn<br/>127.0.0.1:8000]
         FLASK1[Flask<br/>nativo/web/app.py]
 
+        NGINX1 -->|sirve| STATIC1
         NGINX1 -->|proxy_pass| GUNI1
         GUNI1 --> FLASK1
     end
 
     subgraph D["Entorno dockerizado"]
-        NGINX2[nginx<br/>:8081]
+        NGINX2[nginx<br/>:80 interno]
+        STATIC2[estilos.css<br/>estático]
         GUNI2[Gunicorn<br/>app:8000]
         FLASK2[Flask<br/>dockerizado/web/app.py]
 
-        NGINX2 -->|proxy_pass app:8000| GUNI2
+        NGINX2 -->|sirve| STATIC2
+        NGINX2 -->|proxy_pass| GUNI2
         GUNI2 --> FLASK2
     end
 
@@ -720,3 +724,11 @@ docker compose down
 ```
 
 Las salidas reales de estas comprobaciones se conservan en `comprobaciones.txt`.
+
+## 10. Repositorio remoto
+
+El proyecto se encuentra versionado localmente mediante Git y se ha asociado a un repositorio remoto en GitHub:
+
+```text
+git@github.com:apg-29/Calculadora-Web.git
+```
