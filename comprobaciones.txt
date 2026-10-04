@@ -1,0 +1,873 @@
+# 1. Estructura e historial
+
+$ cd ae2 && ls -R .
+.:
+comprobaciones.txt
+dockerizado
+nativo
+README.md
+
+./dockerizado:
+compose.yml
+nginx
+web
+
+./dockerizado/nginx:
+default.conf
+
+./dockerizado/web:
+app.py
+estilos.css
+requirements.txt
+templates
+
+./dockerizado/web/templates:
+index.html
+
+./nativo:
+nginx-calculadora.conf
+web
+
+./nativo/web:
+app.py
+estilos.css
+requirements.txt
+templates
+
+./nativo/web/templates:
+index.html
+
+$ git log --oneline
+a60dedc Anadir la calculadora dockerizada con Compose
+69f2f31 Documentar la practica y versionar el server block
+da28955 Activar, validar y recargar nginx
+c70b376 Crear el server block de nginx
+318ec78 Arrancar Gunicorn en foreground
+5bf392f Publicar los estáticos en el DocumentRoot
+be65553 Crear la calculadora Flask con plantilla y estilos
+95fe47f Crear el entorno virtual e instalar dependencias
+7dd9896 Crear microproyecto de la tarea evaluable AE2
+
+$ git log --format='%an <%ae>' | sort -u
+Angel <angelperzgrcia@gmail.com>
+
+$ grep -RniE "password|passwd|secret" . --exclude-dir=.git || echo "sin credenciales aparentes"
+./.venv/lib/python3.12/site-packages/pip/_internal/models/link.py:388:            # includes a username and password.
+./.venv/lib/python3.12/site-packages/pip/_internal/models/direct_url.py:191:        """url with user:password part removed unless it is formed with
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:27:    ask_password,
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:41:    password: str
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:54:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:66:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:88:                return cred.username, cred.password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:92:            logger.debug("Getting password from keyring for %s", url)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:93:            password = self.keyring.get_password(url, username)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:94:            if password:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:95:                return username, password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:98:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:99:        self.keyring.set_password(url, username, password)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:120:            password = self._get_password(url, username)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:121:            if password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:122:                return username, password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:125:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:126:        return self._set_password(url, username, password)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:128:    def _get_password(self, service_name: str, username: str) -> Optional[str]:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:129:        """Mirror the implementation of keyring.get_password using cli"""
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:146:    def _set_password(self, service_name: str, username: str, password: str) -> None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:147:        """Mirror the implementation of keyring.set_password using cli"""
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:154:            input=f"{password}{os.linesep}".encode("utf-8"),
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:233:        self.passwords: Dict[str, AuthInfo] = {}
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:288:        The provided url should have had its username and password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:339:        url, netloc, url_user_password = split_auth_netloc_from_url(
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:344:        username, password = url_user_password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:345:        if username is not None and password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:347:            return url_user_password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:355:                index_url, _, index_url_user_password = index_info
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:359:        if index_url and index_url_user_password[0] is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:360:            username, password = index_url_user_password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:361:            if username is not None and password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:363:                return index_url_user_password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:372:        # If we don't have a password and keyring is available, use it.
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:385:        return username, password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:395:        Returns (url_without_credentials, username, password). Note
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:397:        function may return a different username and password.
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:402:        username, password = self._get_new_credentials(original_url)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:405:        # Do this if either the username or the password is missing.
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:407:        # the username in the index url, but the password comes from keyring.
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:408:        if (username is None or password is None) and netloc in self.passwords:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:409:            un, pw = self.passwords[netloc]
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:413:                username, password = un, pw
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:415:        if username is not None or password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:416:            # Convert the username and password if they're None, so that
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:421:            password = password or ""
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:424:            self.passwords[netloc] = (username, password)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:428:            (username is not None and password is not None)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:430:            or (username is None and password is None)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:433:        return url, username, password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:437:        url, username, password = self._get_url_and_credentials(req.url)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:442:        if username is not None and password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:444:            req = HTTPBasicAuth(username, password)(req)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:452:    def _prompt_for_password(
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:462:        password = ask_password("Password: ")
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:463:        return username, password, True
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:466:    def _should_save_password_to_keyring(self) -> bool:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:481:        username, password = None, None
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:485:            username, password = self._get_new_credentials(
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:492:        if not self.prompting and not username and not password:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:497:        # Prompt the user for a new username and password
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:499:        if not username and not password:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:500:            username, password, save = self._prompt_for_password(parsed.netloc)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:502:        # Store the new username and password to use for future requests
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:504:        if username is not None and password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:505:            self.passwords[parsed.netloc] = (username, password)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:507:            # Prompt to save the password to keyring
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:508:            if save and self._should_save_password_to_keyring():
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:512:                    password=password,
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:522:        # Add our new username and password to the request
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:523:        req = HTTPBasicAuth(username or "", password or "")(resp.request)
+./.venv/lib/python3.12/site-packages/pip/_internal/network/auth.py:558:                    creds.url, creds.username, creds.password
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:79:        --username and --password options instead of via the URL.
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:82:            # The --username and --password options can't be used for
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:98:        username: Optional[str], password: Optional[HiddenText]
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:103:        if password:
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:104:            extra_args += ["--password", password]
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:161:                # is being used to prompt for passwords, because passwords
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/subversion.py:270:        # the user can be prompted for a password, if required.
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/mercurial.py:65:            config.set("paths", "default", url.secret)
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:389:        information can be provided via the --username and --password options
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:393:        Returns: (netloc, (username, password)).
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:403:        Returns: (url, rev, (username, password)).
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:429:        username: Optional[str], password: Optional[HiddenText]
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:441:        secret_url, rev, user_pass = self.get_url_rev_and_auth(url.secret)
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:442:        username, secret_password = user_pass
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:443:        password: Optional[HiddenText] = None
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:444:        if secret_password is not None:
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:445:            password = hide_value(secret_password)
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:446:        extra_args = self.make_rev_args(username, password)
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:449:        return hide_url(secret_url), rev_options
+./.venv/lib/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:527:            if self.compare_urls(existing_url, url.secret):
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:254:def ask_password(message: str) -> str:
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:255:    """Ask for a password interactively."""
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:479:    Returns: (netloc, (username, password)).
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:486:    # the password attribute of urlsplit()'s return value).
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:492:        # using the password attribute of the return value)
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:512:    netloc, (user, password) = split_auth_from_netloc(netloc)
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:515:    if password is None:
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:517:        password = ""
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:520:        password = ":****"
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:521:    return f"{user}{password}@{netloc}"
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:558:    Returns: (url_without_auth, netloc, (username, password))
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:565:    """Return a copy of url with 'username:password@' removed."""
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:572:    """Replace the password in a given url with ****."""
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:577:    """Replace the password in a given requirement url with ****."""
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:584:    def __init__(self, secret: str, redacted: str) -> None:
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:585:        self.secret = secret
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py:601:        return self.secret == other.secret
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/subprocess.py:68:    return [arg.secret if isinstance(arg, HiddenText) else arg for arg in args]
+./.venv/lib/python3.12/site-packages/pip/_internal/utils/wheel.py:73:        # and RuntimeError for password-protected files
+./.venv/lib/python3.12/site-packages/pip/_internal/cli/cmdoptions.py:274:    help="Specify a proxy in the form scheme://[user:passwd@]proxy.server:port.",
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/packages/six.py:441:    MovedAttribute("HTTPPasswordMgr", "urllib2", "urllib.request"),
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/packages/six.py:442:    MovedAttribute("HTTPPasswordMgrWithDefaultRealm", "urllib2", "urllib.request"),
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:922:    ``ca_cert_dir``, ``ssl_version``, ``key_password`` are only used if :mod:`ssl`
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:945:        key_password=None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:972:        self.key_password = key_password
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:988:                key_password=self.key_password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:1044:            key_password=self.key_password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/poolmanager.py:36:    "key_password",
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/poolmanager.py:52:    "key_key_password",  # str
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/ntlmpool.py:38:        pw is the password for the user.
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/ntlmpool.py:108:                raise Exception("Server rejected request: wrong username or password")
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:15:- Usernames and passwords for the SOCKS proxy
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:32:When connecting to a SOCKS5 proxy the ``username`` and ``password`` portion
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:33:of the ``proxy_url`` will be sent as the username/password to authenticate
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:38:    proxy_url="socks5h://<username>:<password>@proxy-host"
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:102:                proxy_password=self._socks_options["password"],
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:174:        password=None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:181:        if username is None and password is None and parsed.auth is not None:
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:184:                username, password = split
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:207:            "password": password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:473:    def load_cert_chain(self, certfile, keyfile=None, password=None):
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:475:        if password is not None:
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:476:            if not isinstance(password, six.binary_type):
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:477:                password = password.encode("utf-8")
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:478:            self._ctx.set_passwd_cb(lambda *_: password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:215:    credentials. This keychain uses a one-time password and a temporary file to
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:227:    # some random bytes to password-protect the keychain we're creating, so we
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:231:    password = base64.b16encode(random_bytes[8:])  # Must be valid UTF-8
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:239:        keychain_path, len(password), password, False, None, ctypes.byref(keychain)
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/securetransport.py:873:    def load_cert_chain(self, certfile, keyfile=None, password=None):
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/securetransport.py:876:        self._client_cert_passphrase = password
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connection.py:308:        key_password=None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connection.py:320:        self.key_password = key_password
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connection.py:333:        key_password=None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connection.py:354:        self.key_password = key_password
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/connection.py:423:            key_password=self.key_password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/url.py:146:            >>> Url('http', 'username:password', 'host.com', 80,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/url.py:148:            'http://username:password@host.com:80/path?query#fragment'
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/request.py:45:        Colon-separated username:password string for 'authorization: basic ...'
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/request.py:49:        Colon-separated username:password string for 'proxy-authorization: basic ...'
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:366:    key_password=None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:385:    :param key_password:
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:386:        Optional password if the keyfile is encrypted.
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:413:    if keyfile and key_password is None and _is_key_file_encrypted(keyfile):
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:414:        raise SSLError("Client private key is encrypted, password is required")
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:417:        if key_password is None:
+./.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:420:            context.load_cert_chain(certfile, keyfile, key_password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/six.py:421:    MovedAttribute("HTTPPasswordMgr", "urllib2", "urllib.request"),
+./.venv/lib/python3.12/site-packages/pip/_vendor/six.py:422:    MovedAttribute("HTTPPasswordMgrWithDefaultRealm", "urllib2", "urllib.request"),
+./.venv/lib/python3.12/site-packages/pip/_vendor/truststore/_api.py:28:_PasswordType: typing.TypeAlias = str | bytes | typing.Callable[[], str | bytes]
+./.venv/lib/python3.12/site-packages/pip/_vendor/truststore/_api.py:142:        password: _PasswordType | None = None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/truststore/_api.py:145:            certfile=certfile, keyfile=keyfile, password=password
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:37:        password (bool, optional): Enable password input. Defaults to False.
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:58:        password: bool = False,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:69:        self.password = password
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:82:        password: bool = False,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:98:        password: bool = False,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:112:        password: bool = False,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:127:            password (bool, optional): Enable password input. Defaults to False.
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:136:            password=password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:190:        password: bool,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:198:            password (bool): Enable password entry.
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:203:        return console.input(prompt, password=password, stream=stream)
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:274:            value = self.get_input(self.console, prompt, self.password, stream=stream)
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:363:            password = Prompt.ask(
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:364:                "Please enter a password [cyan](must be at least 5 characters)",
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:365:                password=True,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:367:            if len(password) >= 5:
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:369:            print("[prompt.invalid]password too short")
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/prompt.py:370:        print(f"password={password!r}")
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/_emoji_codes.py:156:    "japanese_secret_button": "㊙",
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/_emoji_codes.py:2882:    "secret": "㊙",
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/console.py:2098:        password: bool = False,
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/console.py:2109:            password: (bool, optional): Hide typed text. Defaults to False.
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/console.py:2117:        if password:
+./.venv/lib/python3.12/site-packages/pip/_vendor/rich/logging.py:273:    log.warning("password was rejected for admin site.")
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:25:def _basic_auth_str(username, password):
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:45:    if not isinstance(password, basestring):
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:47:            "Non-string passwords will no longer be supported in Requests "
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:50:            "problems.".format(type(password)),
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:53:        password = str(password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:59:    if isinstance(password, str):
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:60:        password = password.encode("latin1")
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:63:        b64encode(b":".join((username, password))).strip()
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:79:    def __init__(self, username, password):
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:81:        self.password = password
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:87:                self.password == getattr(other, "password", None),
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:95:        r.headers["Authorization"] = _basic_auth_str(self.username, self.password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:103:        r.headers["Proxy-Authorization"] = _basic_auth_str(self.username, self.password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:110:    def __init__(self, username, password):
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:112:        self.password = password
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:189:        A1 = f"{self.username}:{realm}:{self.password}"
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/auth.py:310:                self.password == getattr(other, "password", None),
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/sessions.py:323:            username, password = get_auth_from_url(new_proxies[scheme])
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/sessions.py:325:            username, password = None, None
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/sessions.py:329:        if not scheme.startswith('https') and username and password:
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/sessions.py:330:            headers["Proxy-Authorization"] = _basic_auth_str(username, password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/adapters.py:214:            username, password = get_auth_from_url(proxy)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/adapters.py:218:                password=password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/adapters.py:427:        username, password = get_auth_from_url(proxy)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/adapters.py:430:            headers["Proxy-Authorization"] = _basic_auth_str(username, password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/utils.py:236:                # Return with login / password
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/utils.py:1012:    username,password.
+./.venv/lib/python3.12/site-packages/pip/_vendor/requests/utils.py:1019:        auth = (unquote(parsed.username), unquote(parsed.password))
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/compat.py:37:                         HTTPBasicAuthHandler, HTTPPasswordMgr, HTTPHandler,
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/compat.py:53:    # """splituser('user[:passwd]@host[:port]') --> 'user[:passwd]', 'host[:port]'."""
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/compat.py:74:                                HTTPPasswordMgr, HTTPHandler,
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:19:from .compat import (HTTPBasicAuthHandler, Request, HTTPPasswordMgr,
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:49:        self.password_handler = None
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:55:            # prompting for passwords
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:77:        ``username``, ``password``, ``realm`` and ``url`` attributes from the
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:83:        self.password = cfg.get('password')
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:90:        ``password`` attributes before calling this method.
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:98:        Check that ``username`` and ``password`` have been set, and raise an
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:101:        if self.username is None or self.password is None:
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:102:            raise DistlibException('username and password must be set')
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:103:        pm = HTTPPasswordMgr()
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:105:        pm.add_password(self.realm, netloc, self.username, self.password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:106:        self.password_handler = HTTPBasicAuthHandler(pm)
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:146:    def get_sign_command(self, filename, signer, sign_password, keystore=None):  # pragma: no cover
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:152:        :param sign_password: The passphrase for the signer's
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:165:        if sign_password is not None:
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:209:    def sign_file(self, filename, signer, sign_password, keystore=None):  # pragma: no cover
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:215:        :param sign_password: The passphrase for the signer's
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:223:        cmd, sig_file = self.get_sign_command(filename, signer, sign_password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:226:                                              sign_password.encode('utf-8'))
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:232:    def upload_file(self, metadata, filename, signer=None, sign_password=None,
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:241:        :param sign_password: The passphrase for the signer's
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:265:                sig_file = self.sign_file(filename, signer, sign_password,
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:451:        if self.password_handler:
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/index.py:452:            handlers.append(self.password_handler)
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:837:    username = password = None
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:843:            username, password = prefix.split(':', 1)
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:846:    if password:
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:847:        password = unquote(password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:848:    return username, password, netloc
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:1867:                                             ('password', None)):
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:1891:                    'password': config.get(server, 'password'),
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:1898:    def update(self, username, password):
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:1906:        config.set('pypi', 'password', password)
+./.venv/lib/python3.12/site-packages/pip/_vendor/distlib/util.py:1919:    PyPIRCFile().update(index.username, index.password)
+./.venv/lib/python3.12/site-packages/flask/sansio/app.py:210:    #: If a secret key is set, cryptographic components can use this to
+./.venv/lib/python3.12/site-packages/flask/sansio/app.py:215:    #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
+./.venv/lib/python3.12/site-packages/flask/sansio/app.py:216:    secret_key = ConfigAttribute[t.Union[str, bytes, None]]("SECRET_KEY")
+./.venv/lib/python3.12/site-packages/flask/app.py:183:            "SECRET_KEY": None,
+./.venv/lib/python3.12/site-packages/flask/app.py:184:            "SECRET_KEY_FALLBACKS": None,
+./.venv/lib/python3.12/site-packages/flask/sessions.py:105:            "The session is unavailable because no secret "
+./.venv/lib/python3.12/site-packages/flask/sessions.py:106:            "key was set.  Set the secret_key on the "
+./.venv/lib/python3.12/site-packages/flask/sessions.py:107:            "application to something unique and secret."
+./.venv/lib/python3.12/site-packages/flask/sessions.py:133:    will complain that the secret key was not set.
+./.venv/lib/python3.12/site-packages/flask/sessions.py:303:    #: the salt that should be applied on top of the secret key for the
+./.venv/lib/python3.12/site-packages/flask/sessions.py:318:        if not app.secret_key:
+./.venv/lib/python3.12/site-packages/flask/sessions.py:321:        keys: list[str | bytes] = [app.secret_key]
+./.venv/lib/python3.12/site-packages/flask/sessions.py:323:        if fallbacks := app.config["SECRET_KEY_FALLBACKS"]:
+./.venv/lib/python3.12/site-packages/flask/config.py:66:        SECRET_KEY = 'development key'
+./.venv/lib/python3.12/site-packages/click/core.py:2885:        will be hidden from the user. This is useful for password input.
+./.venv/lib/python3.12/site-packages/click/__init__.py:28:from .decorators import password_option as password_option
+./.venv/lib/python3.12/site-packages/click/decorators.py:404:def password_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
+./.venv/lib/python3.12/site-packages/click/decorators.py:405:    """Add a ``--password`` option which prompts for a password, hiding
+./.venv/lib/python3.12/site-packages/click/decorators.py:409:        value ``"--password"``.
+./.venv/lib/python3.12/site-packages/click/decorators.py:413:        param_decls = ("--password",)
+./.venv/lib/python3.12/site-packages/itsdangerous-2.2.0.dist-info/METADATA:40:auth_s = URLSafeSerializer("secret key", "auth")
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:84:def _strip_auth_from_netloc(netloc: str, safe_user_passwords: Collection[str]) -> str:
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:88:    if user_pass in safe_user_passwords:
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:95:def _strip_url(url: str, safe_user_passwords: Collection[str]) -> str:
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:96:    """url with user:password part removed unless it is formed with
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:97:    environment variables as specified in PEP 610, or it is a safe user:password
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:101:    netloc = _strip_auth_from_netloc(parsed_url.netloc, safe_user_passwords)
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:321:        strip_user_password: bool = True,
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:322:        safe_user_passwords: Collection[str] = ("git",),
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:329:        :param strip_user_password: If True, strip user:password from the URL
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:331:            610, or it is a safe user:password such as `git`.
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:332:        :param safe_user_passwords: A collection of user:password strings that
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:333:            should not be stripped from the URL even if `strip_user_password` is
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:340:        if strip_user_password:
+./.venv/lib/python3.12/site-packages/packaging/direct_url.py:341:            res["url"] = _strip_url(self.url, safe_user_passwords)
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:68:    secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:70:    if isinstance(secret_key, (str, bytes)):
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:71:        return [want_bytes(secret_key)]
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:73:    return [want_bytes(s) for s in secret_key]  # pyright: ignore
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:80:    The secret key should be a random string of ``bytes`` and should not
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:83:    for information about the security of the secret key and salt.
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:85:    :param secret_key: The secret key to sign and verify with. Can be a
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:87:    :param salt: Extra key to combine with ``secret_key`` to distinguish
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:90:    :param key_derivation: How to derive the signing key from the secret
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:104:        ``secret_key``.
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:123:    #: secret key and salt. The default is ``django-concat``. Possible
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:131:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:138:        #: The list of secret keys to try for verifying signatures, from
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:143:        self.secret_keys: list[bytes] = _make_keys_list(secret_key)
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:176:    def secret_key(self) -> bytes:
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:177:        """The newest (last) entry in the :attr:`secret_keys` list. This
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:180:        return self.secret_keys[-1]
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:182:    def derive_key(self, secret_key: str | bytes | None = None) -> bytes:
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:186:        out of a short password. Instead you should use large random
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:187:        secret keys.
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:189:        :param secret_key: A specific secret key to derive from.
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:190:            Defaults to the last item in :attr:`secret_keys`.
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:193:            Added the ``secret_key`` parameter.
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:195:        if secret_key is None:
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:196:            secret_key = self.secret_keys[-1]
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:198:            secret_key = want_bytes(secret_key)
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:201:            return t.cast(bytes, self.digest_method(self.salt + secret_key).digest())
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:204:                bytes, self.digest_method(self.salt + b"signer" + secret_key).digest()
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:207:            mac = hmac.new(secret_key, digestmod=self.digest_method)
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:211:            return secret_key
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:236:        for secret_key in reversed(self.secret_keys):
+./.venv/lib/python3.12/site-packages/itsdangerous/signer.py:237:            key = self.derive_key(secret_key)
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:51:    The secret key should be a random string of ``bytes`` and should not
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:54:    for information about the security of the secret key and salt.
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:56:    :param secret_key: The secret key to sign and verify with. Can be a
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:58:    :param salt: Extra key to combine with ``secret_key`` to distinguish
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:78:        ``secret_key``.
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:112:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:128:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:144:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:163:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:179:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:194:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:205:        #: The list of secret keys to try for verifying signatures, from
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:210:        self.secret_keys: list[bytes] = _make_keys_list(secret_key)
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:239:    def secret_key(self) -> bytes:
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:240:        """The newest (last) entry in the :attr:`secret_keys` list. This
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:243:        return self.secret_keys[-1]
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:287:        return self.signer(self.secret_keys, salt=salt, **self.signer_kwargs)
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:308:            for secret_key in self.secret_keys:
+./.venv/lib/python3.12/site-packages/itsdangerous/serializer.py:309:                yield fallback(secret_key, salt=salt, **kwargs)
+./.venv/lib/python3.12/site-packages/werkzeug/exceptions.py:306:        " (e.g. a bad password), or your browser doesn't understand"
+./.venv/lib/python3.12/site-packages/werkzeug/datastructures/auth.py:26:    set. The ``Basic`` scheme's token is decoded into the ``username`` and ``password``
+./.venv/lib/python3.12/site-packages/werkzeug/datastructures/auth.py:107:                username, _, password = (
+./.venv/lib/python3.12/site-packages/werkzeug/datastructures/auth.py:113:            return cls(scheme, {"username": username, "password": password})
+./.venv/lib/python3.12/site-packages/werkzeug/datastructures/auth.py:129:                f"{self.username}:{self.password}".encode()
+./.venv/lib/python3.12/site-packages/werkzeug/datastructures/auth.py:153:    set. The ``Basic`` scheme will encode ``username`` and ``password`` parameters to a
+./.venv/lib/python3.12/site-packages/werkzeug/test.py:247:        ``Authorization`` header value. A ``(username, password)`` tuple
+./.venv/lib/python3.12/site-packages/werkzeug/test.py:365:                    "basic", {"username": auth[0], "password": auth[1]}
+./.venv/lib/python3.12/site-packages/werkzeug/debug/shared/debugger.js:42:  params.set("s", SECRET)
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:290:        self.secret = gen_salt(20)
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:364:                secret=self.secret,
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:416:            render_console_html(secret=self.secret, evalex_trusted=is_trusted),
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:552:            secret = request.args.get("s")
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:556:            elif cmd == "pinauth" and secret == self.secret:
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:558:            elif cmd == "printpin" and secret == self.secret:
+./.venv/lib/python3.12/site-packages/werkzeug/debug/__init__.py:564:                and self.secret == secret
+./.venv/lib/python3.12/site-packages/werkzeug/debug/tbtools.py:30:          SECRET = "%(secret)s";
+./.venv/lib/python3.12/site-packages/werkzeug/debug/tbtools.py:328:        self, evalex: bool, secret: str, evalex_trusted: bool
+./.venv/lib/python3.12/site-packages/werkzeug/debug/tbtools.py:348:            "secret": secret,
+./.venv/lib/python3.12/site-packages/werkzeug/debug/tbtools.py:442:def render_console_html(secret: str, evalex_trusted: bool) -> str:
+./.venv/lib/python3.12/site-packages/werkzeug/debug/tbtools.py:448:        "secret": secret,
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:72:        Empty username, password, and port 0 are preserved.
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:107:        if parts.password is not None:
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:108:            password = _unquote_user(parts.password)
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:109:            auth = f"{auth}:{password}"
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:126:        Empty username, password, and port 0 are preserved.
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:165:        if parts.password is not None:
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:166:            password = quote(parts.password, safe="%!$&'()*+,;=")
+./.venv/lib/python3.12/site-packages/werkzeug/urls.py:167:            auth = f"{auth}:{password}"
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:7:import secrets
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:33:    return "".join(secrets.choice(SALT_CHARS) for _ in range(length))
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:36:def _hash_internal(method: str, salt: str, password: str) -> tuple[str, str]:
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:39:    password_bytes = password.encode()
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:42:    # trusted hash previously generated by generate_password_hash. An attacker
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:59:                password_bytes, salt=salt_bytes, n=n, r=r, p=p, maxmem=maxmem
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:80:                hash_name, password_bytes, salt_bytes, iterations
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:88:def generate_password_hash(
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:89:    password: str, method: str = "scrypt", salt_length: int = 16
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:91:    """Securely hash a password for storage. A password can be compared to a stored hash
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:92:    using :func:`check_password_hash`.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:104:    users with a link to reset their password.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:106:    :param password: The plaintext password.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:123:    h, actual_method = _hash_internal(method, salt, password)
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:127:def check_password_hash(pwhash: str, password: str) -> bool:
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:128:    """Securely check that the given stored password hash, previously generated using
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:129:    :func:`generate_password_hash`, matches the given password.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:133:    may contact users with a link to reset their password.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:135:    :param pwhash: The hashed password.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:136:    :param password: The plaintext password.
+./.venv/lib/python3.12/site-packages/werkzeug/security.py:146:    return hmac.compare_digest(_hash_internal(method, salt, password)[0], hashval)
+./.venv/lib64/python3.12/site-packages/pip/_internal/models/link.py:388:            # includes a username and password.
+./.venv/lib64/python3.12/site-packages/pip/_internal/models/direct_url.py:191:        """url with user:password part removed unless it is formed with
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:27:    ask_password,
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:41:    password: str
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:54:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:66:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:88:                return cred.username, cred.password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:92:            logger.debug("Getting password from keyring for %s", url)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:93:            password = self.keyring.get_password(url, username)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:94:            if password:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:95:                return username, password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:98:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:99:        self.keyring.set_password(url, username, password)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:120:            password = self._get_password(url, username)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:121:            if password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:122:                return username, password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:125:    def save_auth_info(self, url: str, username: str, password: str) -> None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:126:        return self._set_password(url, username, password)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:128:    def _get_password(self, service_name: str, username: str) -> Optional[str]:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:129:        """Mirror the implementation of keyring.get_password using cli"""
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:146:    def _set_password(self, service_name: str, username: str, password: str) -> None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:147:        """Mirror the implementation of keyring.set_password using cli"""
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:154:            input=f"{password}{os.linesep}".encode("utf-8"),
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:233:        self.passwords: Dict[str, AuthInfo] = {}
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:288:        The provided url should have had its username and password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:339:        url, netloc, url_user_password = split_auth_netloc_from_url(
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:344:        username, password = url_user_password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:345:        if username is not None and password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:347:            return url_user_password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:355:                index_url, _, index_url_user_password = index_info
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:359:        if index_url and index_url_user_password[0] is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:360:            username, password = index_url_user_password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:361:            if username is not None and password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:363:                return index_url_user_password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:372:        # If we don't have a password and keyring is available, use it.
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:385:        return username, password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:395:        Returns (url_without_credentials, username, password). Note
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:397:        function may return a different username and password.
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:402:        username, password = self._get_new_credentials(original_url)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:405:        # Do this if either the username or the password is missing.
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:407:        # the username in the index url, but the password comes from keyring.
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:408:        if (username is None or password is None) and netloc in self.passwords:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:409:            un, pw = self.passwords[netloc]
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:413:                username, password = un, pw
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:415:        if username is not None or password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:416:            # Convert the username and password if they're None, so that
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:421:            password = password or ""
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:424:            self.passwords[netloc] = (username, password)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:428:            (username is not None and password is not None)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:430:            or (username is None and password is None)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:433:        return url, username, password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:437:        url, username, password = self._get_url_and_credentials(req.url)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:442:        if username is not None and password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:444:            req = HTTPBasicAuth(username, password)(req)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:452:    def _prompt_for_password(
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:462:        password = ask_password("Password: ")
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:463:        return username, password, True
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:466:    def _should_save_password_to_keyring(self) -> bool:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:481:        username, password = None, None
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:485:            username, password = self._get_new_credentials(
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:492:        if not self.prompting and not username and not password:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:497:        # Prompt the user for a new username and password
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:499:        if not username and not password:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:500:            username, password, save = self._prompt_for_password(parsed.netloc)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:502:        # Store the new username and password to use for future requests
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:504:        if username is not None and password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:505:            self.passwords[parsed.netloc] = (username, password)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:507:            # Prompt to save the password to keyring
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:508:            if save and self._should_save_password_to_keyring():
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:512:                    password=password,
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:522:        # Add our new username and password to the request
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:523:        req = HTTPBasicAuth(username or "", password or "")(resp.request)
+./.venv/lib64/python3.12/site-packages/pip/_internal/network/auth.py:558:                    creds.url, creds.username, creds.password
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:79:        --username and --password options instead of via the URL.
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:82:            # The --username and --password options can't be used for
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:98:        username: Optional[str], password: Optional[HiddenText]
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:103:        if password:
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:104:            extra_args += ["--password", password]
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:161:                # is being used to prompt for passwords, because passwords
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/subversion.py:270:        # the user can be prompted for a password, if required.
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/mercurial.py:65:            config.set("paths", "default", url.secret)
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:389:        information can be provided via the --username and --password options
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:393:        Returns: (netloc, (username, password)).
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:403:        Returns: (url, rev, (username, password)).
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:429:        username: Optional[str], password: Optional[HiddenText]
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:441:        secret_url, rev, user_pass = self.get_url_rev_and_auth(url.secret)
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:442:        username, secret_password = user_pass
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:443:        password: Optional[HiddenText] = None
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:444:        if secret_password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:445:            password = hide_value(secret_password)
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:446:        extra_args = self.make_rev_args(username, password)
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:449:        return hide_url(secret_url), rev_options
+./.venv/lib64/python3.12/site-packages/pip/_internal/vcs/versioncontrol.py:527:            if self.compare_urls(existing_url, url.secret):
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:254:def ask_password(message: str) -> str:
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:255:    """Ask for a password interactively."""
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:479:    Returns: (netloc, (username, password)).
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:486:    # the password attribute of urlsplit()'s return value).
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:492:        # using the password attribute of the return value)
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:512:    netloc, (user, password) = split_auth_from_netloc(netloc)
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:515:    if password is None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:517:        password = ""
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:520:        password = ":****"
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:521:    return f"{user}{password}@{netloc}"
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:558:    Returns: (url_without_auth, netloc, (username, password))
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:565:    """Return a copy of url with 'username:password@' removed."""
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:572:    """Replace the password in a given url with ****."""
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:577:    """Replace the password in a given requirement url with ****."""
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:584:    def __init__(self, secret: str, redacted: str) -> None:
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:585:        self.secret = secret
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/misc.py:601:        return self.secret == other.secret
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/subprocess.py:68:    return [arg.secret if isinstance(arg, HiddenText) else arg for arg in args]
+./.venv/lib64/python3.12/site-packages/pip/_internal/utils/wheel.py:73:        # and RuntimeError for password-protected files
+./.venv/lib64/python3.12/site-packages/pip/_internal/cli/cmdoptions.py:274:    help="Specify a proxy in the form scheme://[user:passwd@]proxy.server:port.",
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/packages/six.py:441:    MovedAttribute("HTTPPasswordMgr", "urllib2", "urllib.request"),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/packages/six.py:442:    MovedAttribute("HTTPPasswordMgrWithDefaultRealm", "urllib2", "urllib.request"),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:922:    ``ca_cert_dir``, ``ssl_version``, ``key_password`` are only used if :mod:`ssl`
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:945:        key_password=None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:972:        self.key_password = key_password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:988:                key_password=self.key_password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connectionpool.py:1044:            key_password=self.key_password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/poolmanager.py:36:    "key_password",
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/poolmanager.py:52:    "key_key_password",  # str
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/ntlmpool.py:38:        pw is the password for the user.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/ntlmpool.py:108:                raise Exception("Server rejected request: wrong username or password")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:15:- Usernames and passwords for the SOCKS proxy
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:32:When connecting to a SOCKS5 proxy the ``username`` and ``password`` portion
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:33:of the ``proxy_url`` will be sent as the username/password to authenticate
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:38:    proxy_url="socks5h://<username>:<password>@proxy-host"
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:102:                proxy_password=self._socks_options["password"],
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:174:        password=None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:181:        if username is None and password is None and parsed.auth is not None:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:184:                username, password = split
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/socks.py:207:            "password": password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:473:    def load_cert_chain(self, certfile, keyfile=None, password=None):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:475:        if password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:476:            if not isinstance(password, six.binary_type):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:477:                password = password.encode("utf-8")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/pyopenssl.py:478:            self._ctx.set_passwd_cb(lambda *_: password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:215:    credentials. This keychain uses a one-time password and a temporary file to
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:227:    # some random bytes to password-protect the keychain we're creating, so we
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:231:    password = base64.b16encode(random_bytes[8:])  # Must be valid UTF-8
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/low_level.py:239:        keychain_path, len(password), password, False, None, ctypes.byref(keychain)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/securetransport.py:873:    def load_cert_chain(self, certfile, keyfile=None, password=None):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/contrib/securetransport.py:876:        self._client_cert_passphrase = password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connection.py:308:        key_password=None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connection.py:320:        self.key_password = key_password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connection.py:333:        key_password=None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connection.py:354:        self.key_password = key_password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/connection.py:423:            key_password=self.key_password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/url.py:146:            >>> Url('http', 'username:password', 'host.com', 80,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/url.py:148:            'http://username:password@host.com:80/path?query#fragment'
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/request.py:45:        Colon-separated username:password string for 'authorization: basic ...'
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/request.py:49:        Colon-separated username:password string for 'proxy-authorization: basic ...'
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:366:    key_password=None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:385:    :param key_password:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:386:        Optional password if the keyfile is encrypted.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:413:    if keyfile and key_password is None and _is_key_file_encrypted(keyfile):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:414:        raise SSLError("Client private key is encrypted, password is required")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:417:        if key_password is None:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/urllib3/util/ssl_.py:420:            context.load_cert_chain(certfile, keyfile, key_password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/six.py:421:    MovedAttribute("HTTPPasswordMgr", "urllib2", "urllib.request"),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/six.py:422:    MovedAttribute("HTTPPasswordMgrWithDefaultRealm", "urllib2", "urllib.request"),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/truststore/_api.py:28:_PasswordType: typing.TypeAlias = str | bytes | typing.Callable[[], str | bytes]
+./.venv/lib64/python3.12/site-packages/pip/_vendor/truststore/_api.py:142:        password: _PasswordType | None = None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/truststore/_api.py:145:            certfile=certfile, keyfile=keyfile, password=password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:37:        password (bool, optional): Enable password input. Defaults to False.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:58:        password: bool = False,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:69:        self.password = password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:82:        password: bool = False,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:98:        password: bool = False,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:112:        password: bool = False,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:127:            password (bool, optional): Enable password input. Defaults to False.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:136:            password=password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:190:        password: bool,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:198:            password (bool): Enable password entry.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:203:        return console.input(prompt, password=password, stream=stream)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:274:            value = self.get_input(self.console, prompt, self.password, stream=stream)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:363:            password = Prompt.ask(
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:364:                "Please enter a password [cyan](must be at least 5 characters)",
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:365:                password=True,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:367:            if len(password) >= 5:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:369:            print("[prompt.invalid]password too short")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/prompt.py:370:        print(f"password={password!r}")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/_emoji_codes.py:156:    "japanese_secret_button": "㊙",
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/_emoji_codes.py:2882:    "secret": "㊙",
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/console.py:2098:        password: bool = False,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/console.py:2109:            password: (bool, optional): Hide typed text. Defaults to False.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/console.py:2117:        if password:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/rich/logging.py:273:    log.warning("password was rejected for admin site.")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:25:def _basic_auth_str(username, password):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:45:    if not isinstance(password, basestring):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:47:            "Non-string passwords will no longer be supported in Requests "
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:50:            "problems.".format(type(password)),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:53:        password = str(password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:59:    if isinstance(password, str):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:60:        password = password.encode("latin1")
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:63:        b64encode(b":".join((username, password))).strip()
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:79:    def __init__(self, username, password):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:81:        self.password = password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:87:                self.password == getattr(other, "password", None),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:95:        r.headers["Authorization"] = _basic_auth_str(self.username, self.password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:103:        r.headers["Proxy-Authorization"] = _basic_auth_str(self.username, self.password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:110:    def __init__(self, username, password):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:112:        self.password = password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:189:        A1 = f"{self.username}:{realm}:{self.password}"
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/auth.py:310:                self.password == getattr(other, "password", None),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/sessions.py:323:            username, password = get_auth_from_url(new_proxies[scheme])
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/sessions.py:325:            username, password = None, None
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/sessions.py:329:        if not scheme.startswith('https') and username and password:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/sessions.py:330:            headers["Proxy-Authorization"] = _basic_auth_str(username, password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/adapters.py:214:            username, password = get_auth_from_url(proxy)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/adapters.py:218:                password=password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/adapters.py:427:        username, password = get_auth_from_url(proxy)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/adapters.py:430:            headers["Proxy-Authorization"] = _basic_auth_str(username, password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/utils.py:236:                # Return with login / password
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/utils.py:1012:    username,password.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/requests/utils.py:1019:        auth = (unquote(parsed.username), unquote(parsed.password))
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/compat.py:37:                         HTTPBasicAuthHandler, HTTPPasswordMgr, HTTPHandler,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/compat.py:53:    # """splituser('user[:passwd]@host[:port]') --> 'user[:passwd]', 'host[:port]'."""
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/compat.py:74:                                HTTPPasswordMgr, HTTPHandler,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:19:from .compat import (HTTPBasicAuthHandler, Request, HTTPPasswordMgr,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:49:        self.password_handler = None
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:55:            # prompting for passwords
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:77:        ``username``, ``password``, ``realm`` and ``url`` attributes from the
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:83:        self.password = cfg.get('password')
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:90:        ``password`` attributes before calling this method.
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:98:        Check that ``username`` and ``password`` have been set, and raise an
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:101:        if self.username is None or self.password is None:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:102:            raise DistlibException('username and password must be set')
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:103:        pm = HTTPPasswordMgr()
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:105:        pm.add_password(self.realm, netloc, self.username, self.password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:106:        self.password_handler = HTTPBasicAuthHandler(pm)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:146:    def get_sign_command(self, filename, signer, sign_password, keystore=None):  # pragma: no cover
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:152:        :param sign_password: The passphrase for the signer's
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:165:        if sign_password is not None:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:209:    def sign_file(self, filename, signer, sign_password, keystore=None):  # pragma: no cover
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:215:        :param sign_password: The passphrase for the signer's
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:223:        cmd, sig_file = self.get_sign_command(filename, signer, sign_password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:226:                                              sign_password.encode('utf-8'))
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:232:    def upload_file(self, metadata, filename, signer=None, sign_password=None,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:241:        :param sign_password: The passphrase for the signer's
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:265:                sig_file = self.sign_file(filename, signer, sign_password,
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:451:        if self.password_handler:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/index.py:452:            handlers.append(self.password_handler)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:837:    username = password = None
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:843:            username, password = prefix.split(':', 1)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:846:    if password:
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:847:        password = unquote(password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:848:    return username, password, netloc
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:1867:                                             ('password', None)):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:1891:                    'password': config.get(server, 'password'),
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:1898:    def update(self, username, password):
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:1906:        config.set('pypi', 'password', password)
+./.venv/lib64/python3.12/site-packages/pip/_vendor/distlib/util.py:1919:    PyPIRCFile().update(index.username, index.password)
+./.venv/lib64/python3.12/site-packages/flask/sansio/app.py:210:    #: If a secret key is set, cryptographic components can use this to
+./.venv/lib64/python3.12/site-packages/flask/sansio/app.py:215:    #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
+./.venv/lib64/python3.12/site-packages/flask/sansio/app.py:216:    secret_key = ConfigAttribute[t.Union[str, bytes, None]]("SECRET_KEY")
+./.venv/lib64/python3.12/site-packages/flask/app.py:183:            "SECRET_KEY": None,
+./.venv/lib64/python3.12/site-packages/flask/app.py:184:            "SECRET_KEY_FALLBACKS": None,
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:105:            "The session is unavailable because no secret "
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:106:            "key was set.  Set the secret_key on the "
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:107:            "application to something unique and secret."
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:133:    will complain that the secret key was not set.
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:303:    #: the salt that should be applied on top of the secret key for the
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:318:        if not app.secret_key:
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:321:        keys: list[str | bytes] = [app.secret_key]
+./.venv/lib64/python3.12/site-packages/flask/sessions.py:323:        if fallbacks := app.config["SECRET_KEY_FALLBACKS"]:
+./.venv/lib64/python3.12/site-packages/flask/config.py:66:        SECRET_KEY = 'development key'
+./.venv/lib64/python3.12/site-packages/click/core.py:2885:        will be hidden from the user. This is useful for password input.
+./.venv/lib64/python3.12/site-packages/click/__init__.py:28:from .decorators import password_option as password_option
+./.venv/lib64/python3.12/site-packages/click/decorators.py:404:def password_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
+./.venv/lib64/python3.12/site-packages/click/decorators.py:405:    """Add a ``--password`` option which prompts for a password, hiding
+./.venv/lib64/python3.12/site-packages/click/decorators.py:409:        value ``"--password"``.
+./.venv/lib64/python3.12/site-packages/click/decorators.py:413:        param_decls = ("--password",)
+./.venv/lib64/python3.12/site-packages/itsdangerous-2.2.0.dist-info/METADATA:40:auth_s = URLSafeSerializer("secret key", "auth")
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:84:def _strip_auth_from_netloc(netloc: str, safe_user_passwords: Collection[str]) -> str:
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:88:    if user_pass in safe_user_passwords:
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:95:def _strip_url(url: str, safe_user_passwords: Collection[str]) -> str:
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:96:    """url with user:password part removed unless it is formed with
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:97:    environment variables as specified in PEP 610, or it is a safe user:password
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:101:    netloc = _strip_auth_from_netloc(parsed_url.netloc, safe_user_passwords)
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:321:        strip_user_password: bool = True,
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:322:        safe_user_passwords: Collection[str] = ("git",),
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:329:        :param strip_user_password: If True, strip user:password from the URL
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:331:            610, or it is a safe user:password such as `git`.
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:332:        :param safe_user_passwords: A collection of user:password strings that
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:333:            should not be stripped from the URL even if `strip_user_password` is
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:340:        if strip_user_password:
+./.venv/lib64/python3.12/site-packages/packaging/direct_url.py:341:            res["url"] = _strip_url(self.url, safe_user_passwords)
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:68:    secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:70:    if isinstance(secret_key, (str, bytes)):
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:71:        return [want_bytes(secret_key)]
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:73:    return [want_bytes(s) for s in secret_key]  # pyright: ignore
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:80:    The secret key should be a random string of ``bytes`` and should not
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:83:    for information about the security of the secret key and salt.
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:85:    :param secret_key: The secret key to sign and verify with. Can be a
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:87:    :param salt: Extra key to combine with ``secret_key`` to distinguish
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:90:    :param key_derivation: How to derive the signing key from the secret
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:104:        ``secret_key``.
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:123:    #: secret key and salt. The default is ``django-concat``. Possible
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:131:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:138:        #: The list of secret keys to try for verifying signatures, from
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:143:        self.secret_keys: list[bytes] = _make_keys_list(secret_key)
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:176:    def secret_key(self) -> bytes:
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:177:        """The newest (last) entry in the :attr:`secret_keys` list. This
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:180:        return self.secret_keys[-1]
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:182:    def derive_key(self, secret_key: str | bytes | None = None) -> bytes:
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:186:        out of a short password. Instead you should use large random
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:187:        secret keys.
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:189:        :param secret_key: A specific secret key to derive from.
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:190:            Defaults to the last item in :attr:`secret_keys`.
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:193:            Added the ``secret_key`` parameter.
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:195:        if secret_key is None:
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:196:            secret_key = self.secret_keys[-1]
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:198:            secret_key = want_bytes(secret_key)
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:201:            return t.cast(bytes, self.digest_method(self.salt + secret_key).digest())
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:204:                bytes, self.digest_method(self.salt + b"signer" + secret_key).digest()
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:207:            mac = hmac.new(secret_key, digestmod=self.digest_method)
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:211:            return secret_key
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:236:        for secret_key in reversed(self.secret_keys):
+./.venv/lib64/python3.12/site-packages/itsdangerous/signer.py:237:            key = self.derive_key(secret_key)
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:51:    The secret key should be a random string of ``bytes`` and should not
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:54:    for information about the security of the secret key and salt.
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:56:    :param secret_key: The secret key to sign and verify with. Can be a
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:58:    :param salt: Extra key to combine with ``secret_key`` to distinguish
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:78:        ``secret_key``.
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:112:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:128:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:144:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:163:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:179:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:194:        secret_key: str | bytes | cabc.Iterable[str] | cabc.Iterable[bytes],
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:205:        #: The list of secret keys to try for verifying signatures, from
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:210:        self.secret_keys: list[bytes] = _make_keys_list(secret_key)
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:239:    def secret_key(self) -> bytes:
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:240:        """The newest (last) entry in the :attr:`secret_keys` list. This
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:243:        return self.secret_keys[-1]
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:287:        return self.signer(self.secret_keys, salt=salt, **self.signer_kwargs)
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:308:            for secret_key in self.secret_keys:
+./.venv/lib64/python3.12/site-packages/itsdangerous/serializer.py:309:                yield fallback(secret_key, salt=salt, **kwargs)
+./.venv/lib64/python3.12/site-packages/werkzeug/exceptions.py:306:        " (e.g. a bad password), or your browser doesn't understand"
+./.venv/lib64/python3.12/site-packages/werkzeug/datastructures/auth.py:26:    set. The ``Basic`` scheme's token is decoded into the ``username`` and ``password``
+./.venv/lib64/python3.12/site-packages/werkzeug/datastructures/auth.py:107:                username, _, password = (
+./.venv/lib64/python3.12/site-packages/werkzeug/datastructures/auth.py:113:            return cls(scheme, {"username": username, "password": password})
+./.venv/lib64/python3.12/site-packages/werkzeug/datastructures/auth.py:129:                f"{self.username}:{self.password}".encode()
+./.venv/lib64/python3.12/site-packages/werkzeug/datastructures/auth.py:153:    set. The ``Basic`` scheme will encode ``username`` and ``password`` parameters to a
+./.venv/lib64/python3.12/site-packages/werkzeug/test.py:247:        ``Authorization`` header value. A ``(username, password)`` tuple
+./.venv/lib64/python3.12/site-packages/werkzeug/test.py:365:                    "basic", {"username": auth[0], "password": auth[1]}
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/shared/debugger.js:42:  params.set("s", SECRET)
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:290:        self.secret = gen_salt(20)
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:364:                secret=self.secret,
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:416:            render_console_html(secret=self.secret, evalex_trusted=is_trusted),
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:552:            secret = request.args.get("s")
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:556:            elif cmd == "pinauth" and secret == self.secret:
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:558:            elif cmd == "printpin" and secret == self.secret:
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/__init__.py:564:                and self.secret == secret
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/tbtools.py:30:          SECRET = "%(secret)s";
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/tbtools.py:328:        self, evalex: bool, secret: str, evalex_trusted: bool
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/tbtools.py:348:            "secret": secret,
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/tbtools.py:442:def render_console_html(secret: str, evalex_trusted: bool) -> str:
+./.venv/lib64/python3.12/site-packages/werkzeug/debug/tbtools.py:448:        "secret": secret,
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:72:        Empty username, password, and port 0 are preserved.
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:107:        if parts.password is not None:
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:108:            password = _unquote_user(parts.password)
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:109:            auth = f"{auth}:{password}"
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:126:        Empty username, password, and port 0 are preserved.
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:165:        if parts.password is not None:
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:166:            password = quote(parts.password, safe="%!$&'()*+,;=")
+./.venv/lib64/python3.12/site-packages/werkzeug/urls.py:167:            auth = f"{auth}:{password}"
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:7:import secrets
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:33:    return "".join(secrets.choice(SALT_CHARS) for _ in range(length))
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:36:def _hash_internal(method: str, salt: str, password: str) -> tuple[str, str]:
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:39:    password_bytes = password.encode()
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:42:    # trusted hash previously generated by generate_password_hash. An attacker
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:59:                password_bytes, salt=salt_bytes, n=n, r=r, p=p, maxmem=maxmem
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:80:                hash_name, password_bytes, salt_bytes, iterations
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:88:def generate_password_hash(
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:89:    password: str, method: str = "scrypt", salt_length: int = 16
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:91:    """Securely hash a password for storage. A password can be compared to a stored hash
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:92:    using :func:`check_password_hash`.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:104:    users with a link to reset their password.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:106:    :param password: The plaintext password.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:123:    h, actual_method = _hash_internal(method, salt, password)
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:127:def check_password_hash(pwhash: str, password: str) -> bool:
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:128:    """Securely check that the given stored password hash, previously generated using
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:129:    :func:`generate_password_hash`, matches the given password.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:133:    may contact users with a link to reset their password.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:135:    :param pwhash: The hashed password.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:136:    :param password: The plaintext password.
+./.venv/lib64/python3.12/site-packages/werkzeug/security.py:146:    return hmac.compare_digest(_hash_internal(method, salt, password)[0], hashval)
+sin credenciales aparentes
+
+# 2. Entorno nativo
+
+$ docker exec dpl-lab nginx -T | grep -E "server_name|root|proxy_pass"
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+    server_name _;
+    root /var/www/calculadora;
+        proxy_pass http://127.0.0.1:8000;
+
+$ docker exec dpl-lab ps aux | grep gunicorn
+root         675  0.0  0.0   4336  3396 ?        Ss   18:49   0:00 bash -c cd /home/aperez/dpl/ae2/nativo/web && /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app > /var/log/calculadora-gunicorn.log 2>&1
+root         682  0.0  0.1  31288 24312 ?        S    18:49   0:01 /home/aperez/dpl/ae2/.venv/bin/python3 /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app
+root         683  0.0  0.1  39400 30168 ?        S    18:50   0:00 /home/aperez/dpl/ae2/.venv/bin/python3 /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app
+root         684  0.0  0.1  39328 30140 ?        S    18:50   0:00 /home/aperez/dpl/ae2/.venv/bin/python3 /home/aperez/dpl/ae2/.venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 2 --access-logfile - --error-logfile - app:app
+
+$ docker exec dpl-lab curl -s http://localhost/ | grep "Calculadora en entorno nativo"
+    <title>Calculadora en entorno nativo</title>
+        <h1>Calculadora en entorno nativo</h1>
+
+$ docker exec dpl-lab curl -s -d "v1=6&v2=7&op=*" http://localhost/ | grep -i "Resultado"
+            <p class="resultado">Resultado: 42</p>
+
+# 3. Entorno dockerizado
+
+$ docker compose up -d && docker compose ps
+NAME                IMAGE              COMMAND                  SERVICE   CREATED             STATUS             PORTS
+dockerizado-app-1   python:3.12-slim   "sh -c 'pip install …"   app       About an hour ago   Up About an hour   
+dockerizado-web-1   nginx:1.27         "/docker-entrypoint.…"   web       About an hour ago   Up About an hour   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
+
+$ curl -s http://localhost:8081/ | grep "Calculadora en entorno dockerizado"
+    <title>Calculadora en entorno dockerizado</title>
+        <h1>Calculadora en entorno dockerizado</h1>
+
+$ curl -s -d "v1=6&v2=7&op=*" http://localhost:8081/ | grep -i "Resultado"
+            <p class="resultado">Resultado: 42</p>
+
+$ docker compose down

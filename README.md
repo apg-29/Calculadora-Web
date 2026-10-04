@@ -695,3 +695,28 @@ Esto confirma que el flujo completo funciona correctamente. El entorno dockeriza
 ```text
 http://localhost:8081/
 ```
+
+## 9. Comprobación
+
+Se verificaron los dos entornos mediante curl, comprobando tanto el h1 exigido como el cálculo realizado por la aplicación.
+
+### Entorno nativo
+
+```bash
+docker exec dpl-lab nginx -T | grep -E "server_name|root|proxy_pass"
+docker exec dpl-lab ps aux | grep gunicorn
+docker exec dpl-lab curl -s http://localhost/ | grep "Calculadora en entorno nativo"
+docker exec dpl-lab curl -s -d "v1=6&v2=7&op=*" http://localhost/ | grep -i "Resultado"
+```
+
+### Entorno dockerizado
+
+```bash
+cd dockerizado
+docker compose up -d && docker compose ps
+curl -s http://localhost:8081/ | grep "Calculadora en entorno dockerizado"
+curl -s -d "v1=6&v2=7&op=*" http://localhost:8081/ | grep -i "Resultado"
+docker compose down
+```
+
+Las salidas reales de estas comprobaciones se conservan en `comprobaciones.txt`.
