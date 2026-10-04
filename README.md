@@ -9,6 +9,19 @@ Se ha elegido el stack Python:
 -   nginx como servidor web y proxy inverso.
 -   Docker Compose para el entorno dockerizado.
 
+## Índice
+
+- [1. Instalación](#1-instalación)
+- [2. Crear la calculadora Flask](#2-crear-la-calculadora-flask)
+- [3. Publicar los estáticos en el DocumentRoot](#3-publicar-los-estáticos-en-el-documentroot)
+- [4. Iniciar Gunicorn en foreground](#4-iniciar-gunicorn-en-foreground)
+- [5. Crear el server block de nginx](#5-crear-el-server-block-de-nginx)
+- [6. Activar, validar y recargar nginx](#6-activar-validar-y-recargar-nginx)
+- [7. Comprobar el entorno nativo y leer los logs](#7-comprobar-el-entorno-nativo-y-leer-los-logs)
+- [8. Crear el entorno dockerizado con Docker Compose](#8-crear-el-entorno-dockerizado-con-docker-compose)
+- [9. Comprobación](#9-comprobación)
+- [10. Repositorio remoto](#10-repositorio-remoto)
+
 ## 1. Instalación
 
 ### Entorno nativo
