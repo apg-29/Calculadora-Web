@@ -369,4 +369,139 @@ Resultado:
 
 Está activo el `server block` de `calculadora` y nginx recibe las peticiones en el puerto 80, sirviendo directamente los archivos estáticos y enviando las peticiones de la aplicación a Gunicorn mediante `proxy_pass`.
 
+## 7. Comprobar el entorno nativo y leer los logs
 
+Una vez iniciado nginx y configurado el server block, se comprobó el funcionamiento de la aplicación tanto desde dentro del contenedor como desde el host.
+
+### Comprobaciones desde el contenedor
+
+Se comprobó que nginx respondía correctamente:
+
+```bash
+docker exec dpl-lab curl -I localhost  
+```
+
+Resultado:
+
+```text
+HTTP/1.1 200 OK  
+Server: nginx/1.24.0 (Ubuntu)  
+```
+
+Se comprobó que la página mostraba el título correspondiente al entorno nativo:
+
+```bash
+docker exec dpl-lab curl -s localhost | grep -o "<h1>.\*</h1>"  
+```
+Resultado:
+
+```text
+<h1>Calculadora en entorno nativo</h1>  
+```
+Se comprobó el cálculo de una suma:
+
+```bash
+docker exec dpl-lab curl -s -d "v1=7&v2=5&op=%2B" http://localhost/ | grep -i "Resultado"  
+```
+Resultado:
+
+```text
+<p class="resultado">Resultado: 12</p>  
+```
+También se comprobó una multiplicación:
+
+```bash
+docker exec dpl-lab curl -s -d "v1=6&v2=7&op=\*" http://localhost/ | grep -i "Resultado"  
+```
+
+Resultado:
+
+```text
+<p class="resultado">Resultado: 42</p>  
+```
+
+Finalmente se comprobó que nginx sirve correctamente el fichero estático:
+
+```bash
+docker exec dpl-lab curl -s -o /dev/null -w "%{http\_code}\\n" http://localhost/estilos.css  
+```
+
+Resultado:
+```text
+200  
+```
+### Comprobaciones desde el anfitrión
+
+También se comprobó el acceso a la aplicación desde la máquina anfitriona:
+
+```bash
+curl -I localhost 
+```
+
+Resultado:
+
+```text
+HTTP/1.1 200 OK  
+Server: nginx/1.24.0 (Ubuntu)  
+```
+
+Se comprobó nuevamente el cálculo desde el anfitrión:
+
+```bash
+curl -s -d "v1=6&v2=7&op=\*" http://localhost/ | grep -i "Resultado"  
+```
+Resultado:
+```text
+<p class="resultado">Resultado: 42</p>  
+```
+
+Esto demuestra que la petición atraviesa nginx, llega a Gunicorn y finalmente es procesada por la aplicación Flask.
+
+### Logs de nginx
+
+Se revisaron los últimos registros de acceso de nginx:
+
+```bash
+docker exec dpl-lab tail -n 5 /var/log/nginx/calculadora.access.log  
+```
+
+Se observaron peticiones `GET`, `POST` y `HEAD` con código HTTP `200`, incluyendo la petición al fichero `estilos.css`.
+
+```text
+::1 - - [04/Oct/2026:20:16:15 +0000] "POST / HTTP/1.1" 200 1074 "-" "curl/8.5.0"
+::1 - - [04/Oct/2026:20:17:57 +0000] "POST / HTTP/1.1" 200 1074 "-" "curl/8.5.0"
+::1 - - [04/Oct/2026:20:19:40 +0000] "GET /estilos.css HTTP/1.1" 200 1146 "-" "curl/8.5.0"
+172.17.0.1 - - [04/Oct/2026:20:20:00 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/8.5.0"
+172.17.0.1 - - [04/Oct/2026:20:20:20 +0000] "POST / HTTP/1.1" 200 1074 "-" "curl/8.5.0"
+```
+
+### Logs de Gunicorn
+
+También se revisaron los registros de Gunicorn:
+
+```bash
+docker exec dpl-lab tail -n 5 /var/log/calculadora-gunicorn.log  
+```
+Los registros muestran las peticiones recibidas por Gunicorn, incluyendo las peticiones `POST /` utilizadas para realizar los cálculos.
+
+```text
+127.0.0.1 - - [04/Oct/2026:20:12:45 +0000] "GET / HTTP/1.0" 200 1070 "-" "curl/8.5.0"
+127.0.0.1 - - [04/Oct/2026:20:16:15 +0000] "POST / HTTP/1.0" 200 1074 "-" "curl/8.5.0"
+127.0.0.1 - - [04/Oct/2026:20:17:57 +0000] "POST / HTTP/1.0" 200 1074 "-" "curl/8.5.0"
+127.0.0.1 - - [04/Oct/2026:20:20:00 +0000] "HEAD / HTTP/1.0" 200 0 "-" "curl/8.5.0"
+127.0.0.1 - - [04/Oct/2026:20:20:20 +0000] "POST / HTTP/1.0" 200 1074 "-" "curl/8.5.0"
+```
+
+### Copia del server block
+
+Antes de versionar la configuración, se realizó una copia del server block dentro del proyecto:
+
+```bash
+docker cp dpl-lab:/etc/nginx/sites-available/calculadora ~/dpl/ae2/nativo/nginx-calculadora.conf  
+```
+
+La copia queda almacenada en:
+
+```text
+nativo/nginx-calculadora.conf  
+```
