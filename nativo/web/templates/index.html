@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora en entorno nativo</title>
+    <link rel="stylesheet" href="/estilos.css">
+</head>
+<body>
+    <main class="calculadora">
+        <h1>Calculadora en entorno nativo</h1>
+        <form method="post" action="/">
+            <label for="v1">Valor 1</label>
+            <input type="text" id="v1" name="v1" value="{{ v1 }}">
+
+            <label for="v2">Valor 2</label>
+            <input type="text" id="v2" name="v2" value="{{ v2 }}">
+
+            <label for="op">Operacion</label>
+            <select id="op" name="op">
+                <option value="+" {% if op == '+' %}selected{% endif %}>Suma</option>
+                <option value="-" {% if op == '-' %}selected{% endif %}>Resta</option>
+                <option value="*" {% if op == '*' %}selected{% endif %}>Multiplicacion</option>
+                <option value="/" {% if op == '/' %}selected{% endif %}>Division</option>
+            </select>
+
+            <button type="submit">Calcular</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% elif resultado is not none %}
+            <p class="resultado">Resultado: {{ resultado }}</p>
+        {% endif %}
+    </main>
+</body>
+</html>

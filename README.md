@@ -74,8 +74,41 @@ gunicorn     23.0.0
 
 El entorno virtual `.venv/` no se versiona mediante Git porque contiene dependencias instaladas y puede regenerarse a partir de `requirements.txt`.
 
+## 2. Crear la calculadora Flask
 
+La aplicación web se implementa con Flask y realiza los cálculos en el servidor mediante Python. No se utiliza JavaScript para realizar las operaciones.
 
+La aplicación principal se encuentra en:
 
+```bash
+nativo/web/app.py
+```
 
+El fichero contiene las operaciones de suma, resta, multiplicación y división, además de la validación de los operandos y la comprobación de división entre cero.
 
+La aplicación dispone de una ruta GET para mostrar el formulario y una ruta POST para procesar los datos enviados por el usuario.
+
+La plantilla HTML se encuentra en:
+
+```bash
+nativo/web/templates/index.html
+```
+La plantilla contiene el formulario de la calculadora y muestra el resultado del cálculo o el mensaje de error correspondiente.
+
+El título utilizado para identificar el entorno nativo es `Calculadora en entorno nativo`
+
+Los estilos de la aplicación se encuentran en:
+
+```bash
+nativo/web/estilos.css
+```
+
+Los archivos creados se comprobaron con:
+
+```bash
+ls -l nativo/web/app.py
+ls -l nativo/web/estilos.css
+ls -l nativo/web/templates/index.html
+```
+
+Los tres archivos existen correctamente y quedan preparados para ejecutar la aplicación mediante Gunicorn y publicarla posteriormente a través de nginx.
